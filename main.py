@@ -4,8 +4,12 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from data.config import Config, load_config
-from keyboards.main_menu import set_main_menu
+from keyboards.set_menu import set_main_menu
+from handlers import user_handlers, other_handlers
+
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +32,14 @@ async def main():
     )
     dp = Dispatcher(storage=storage)
 
-    dp.workflow_data.update(...)
-
     await set_main_menu(bot)
 
     logger.info('Подключаем роутеры')
 
     logger.info('Подключаем миддлвари')
+
+    dp.include_router(user_handlers.router)
+    dp.include_router(other_handlers.router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
